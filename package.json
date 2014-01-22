@@ -4,7 +4,8 @@
   "description": "Blackhole submission app.",
   "main": "server.js",
   "dependencies": {
-    "mongojs": "~0.10.0"
+    "mongojs": "~0.10.0",
+    "request": "~2.33.0"
   },
   "devDependencies": {},
   "scripts": {
