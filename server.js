@@ -1,3 +1,4 @@
+var fs = require('fs');
 var http = require('http');
 var request = require('request');
 var databaseUrl = process.env.MONGO_URL || "blackhole"; // "username:password@example.com/mydb"
@@ -40,12 +41,8 @@ http.createServer(function (req, res) {
             res.writeHead(400, "Unexpected field", {'Content-Type': 'text/html'});
             res.end('<html><head><title>400 - Unexpected field</title></head><body><h1>Unexpected field: ' + properties[0] + '.</h1></body></html>');
           } else {
-            var options = {
-              url: 'http://joshmatthews.net/emails.lst',
-              method: 'GET'
-            };
-            request(options, function(error, response, body) {
-              if (!error && response.statusCode == 200) {
+            fs.readFile('emails.lst', 'utf8', function(error, body) {
+              if (!error) {
                 var emails = body.split('\n');
                 data.volunteer = emails.indexOf(data.email) == -1;
                 db.contributions.save(data, function(err, saved) {
@@ -61,8 +58,8 @@ http.createServer(function (req, res) {
                 });
               } else {
                 console.log("[500] " + req.method + " to " + req.url);
-                res.writeHead(500, "Error saving submission", {'Content-Type': 'text/html'});
-                res.end('<html><head><title>500 - Error saving submission</title></head><body><h1>Method not supported.</h1></body></html>');
+                res.writeHead(500, "Error retrieving emails.", {'Content-Type': 'text/html'});
+                res.end('<html><head><title>500 - Error retrieving emails.</title></head><body><h1>Method not supported.</h1></body></html>');
               }
             });
           }
